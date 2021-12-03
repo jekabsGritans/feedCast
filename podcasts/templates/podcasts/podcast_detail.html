@@ -1,0 +1,16 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+    <div name="podcast">
+        <h1>{% block title %}{{ podcast.title }}{% endblock %}</h1>
+        <p>{{ podcast.description }}</p>
+    </div>
+    <div name="episodes">
+        {% for episode in episodes %}
+            <div class="episode">
+                <h3><a href="{% url 'podcasts:episodes:detail' slug=podcast.slug ep_slug=episode.slug %}">{{ episode.title }}</a></h3>
+                <p>{{ episode.description_snippet}}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
