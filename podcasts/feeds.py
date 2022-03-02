@@ -18,10 +18,10 @@ class PodcastFeedType(Rss201rev2Feed):
             handler.addQuickElement('description', self.feed['description'])
             handler.addQuickElement('link', self.feed['link']) 
             handler.addQuickElement('itunes:author', self.feed['itunes_author'])
-            handler.addQuickElement('itunes:image', self.feed['itunes_image']) # specify default image url
+            handler.addQuickElement('itunes:image', contents = None, attrs = {"href": self.feed['itunes_image']}) # specify default image url
 
             if not self.feed['itunes_explicit']:
-                explicit='clean'
+                explicit='no'
             else: explicit='yes'
             handler.addQuickElement('itunes:explicit', explicit)
 
@@ -33,11 +33,11 @@ class PodcastFeedType(Rss201rev2Feed):
             if not self.feed['itunes_complete']:
                 complete = 'no'
             else: complete = 'yes'
-            handler.addQuickElement('itunes:complete', complete)
+            handler.addQuickElement('itunes:complete', complete)# seems to be removed from delivery spec???
 
             handler.addQuickElement('itunes:type', self.feed['itunes_type'])
-            handler.addQuickElement('spotify:limit', self.feed['spotify_limit'])#not as in spec
-            handler.addQuickElement('spotify:countryOfOrigin', " ".join([self.feed['spotify_countryOfOrigin']]))#supply a list
+            handler.addQuickElement('spotify:limit',  contents = None, attrs = {"recentCount": str(self.feed['spotify_limit'])})
+            handler.addQuickElement('spotify:countryOfOrigin', " ".join(self.feed['spotify_countryOfOrigin']))
 
 
 
@@ -77,7 +77,7 @@ class PodcastFeed(Feed):
         return ['modern','renisance']
     
     def itunes_complete(self, pod):
-        return False
+        return "False"
     
     def itunes_type(self, pod):
         return pod.itunes_type
@@ -86,7 +86,10 @@ class PodcastFeed(Feed):
         return pod.spotify_limit
     
     def spotify_countryOfOrigin(self, pod):#fix (also model)
-        return ['lv','lt']
+        return ['lv','lt'] # self.relevant_countries
+
+    def media_restriction(self, pod):
+        return ['us'] # self.restricted_countries
     
     
 
@@ -104,7 +107,7 @@ class PodcastFeed(Feed):
         return "https://test.com/124"
     
     ADDED_FIELDS=(
-        "itunes_author", "itunes_image", "itunes_explicit", "itunes_category", "itunes_subcategories", "itunes_complete", "itunes_type", "spotify_limit", "spotify_countryOfOrigin" 
+        "itunes_author", "itunes_image", "itunes_explicit", "itunes_category", "itunes_subcategories", "itunes_complete", "itunes_type", "spotify_limit", "spotify_countryOfOrigin", "media_restriction" 
     )
     def feed_extra_kwargs(self, obj):
         kwargs = {}
